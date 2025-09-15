@@ -64,22 +64,34 @@ curl http://127.0.0.1:3000/v1/chat/completions \
   }'
 ```
 
-## Zed Configuration
+## Zed Configuration Example
 
-To use this mock server in Zed, open your `settings.json` (`cmd + ,`) and add the following configuration under `language_models.openai_compatible`:
+Below is an example of how to configure Zed to point to this mock server. 
 
 ```json
-"rust_mock": {
-  "api_url": "http://127.0.0.1:3000/v1",
-  "available_models": [
-    {
-      "name": "mock-model",
-      "display_name": "Rust Mock",
-      "max_tokens": 8000,
-      "max_output_tokens": 4096
+{
+  "agent": {
+    "default_model": {
+      "provider": "rust_mock",
+      "model": "mock-model"
     }
-  ]
+  },
+  "language_models": {
+    "openai_compatible": {
+      "rust_mock": {
+        "api_url": "http://127.0.0.1:3000/v1",
+        "available_models": [
+          {
+            "name": "mock-model",
+            "display_name": "Rust Mock",
+            "max_tokens": 8000,
+            "max_output_tokens": 4096
+          }
+        ]
+      }
+    }
+  }
 }
 ```
 
-**Note:** Zed's current UI for OpenAI-compatible providers does not have a standard field to inject a Bearer Token for authentication. Therefore, testing this server's authenticated endpoint directly through the Zed assistant is not straightforward. The server is now better suited for testing API clients that allow setting custom authorization headers.
+**🚨 Important Warning:** Zed's current UI for OpenAI-compatible providers does not have a standard field to inject a Bearer Token for authentication. Because of this, any request from the Zed assistant to this server will **fail with a `401 Unauthorized` error**. The configuration above will make the model appear in Zed, but it will not be usable due to the server's JWT authentication.
